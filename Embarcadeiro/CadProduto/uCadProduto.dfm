@@ -1,0 +1,373 @@
+inherited frmCadProduto: TfrmCadProduto
+  BorderStyle = bsSizeable
+  Caption = 'Cadastro de Produto'
+  WindowState = wsMaximized
+  StyleElements = [seFont, seClient, seBorder]
+  TextHeight = 15
+  object Image1: TImage [0]
+    Left = 552
+    Top = 272
+    Width = 105
+    Height = 105
+  end
+  object Image2: TImage [1]
+    Left = 671
+    Top = 53
+    Width = 250
+    Height = 250
+  end
+  inherited pgcPrincipal: TPageControl
+    inherited tabListagem: TTabSheet
+      inherited grdListagem: TDBGrid
+        Top = 73
+        Height = 446
+        OnCellClick = grdListagemCellClick
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'CODIGO'
+            Width = 82
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'DESCRICAO'
+            Width = 300
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'COR'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'TAM'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'PRECO'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'CUSTO'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'UNIDADE'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ATIVO'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'SUSPENSO'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'OBSERVACAO'
+            Width = 600
+            Visible = True
+          end>
+      end
+      inherited pnlTopo: TPanel
+        Height = 73
+        StyleElements = [seFont, seClient, seBorder]
+        ExplicitHeight = 73
+        inherited lblIndice: TLabel
+          Top = 13
+          Width = 129
+          Caption = '<Selecione um Campo>'
+          StyleElements = [seFont, seClient, seBorder]
+          ExplicitTop = 13
+          ExplicitWidth = 129
+        end
+        inherited Label1: TLabel
+          Top = 13
+          StyleElements = [seFont, seClient, seBorder]
+          ExplicitTop = 13
+        end
+        inherited mskEdit: TMaskEdit
+          Left = 10
+          Top = 34
+          StyleElements = [seFont, seClient, seBorder]
+          ExplicitLeft = 10
+          ExplicitTop = 34
+        end
+        inherited btnPesquisar: TBitBtn
+          Left = 1024
+          Top = 7
+          Width = 65
+          Enabled = False
+          ExplicitLeft = 1024
+          ExplicitTop = 7
+          ExplicitWidth = 65
+        end
+      end
+    end
+    inherited tabManutencao: TTabSheet
+      object GroupBox1: TGroupBox
+        Left = 18
+        Top = 48
+        Width = 519
+        Height = 169
+        Caption = 'Dados Gerais'
+        TabOrder = 0
+        object lblUN: TLabel
+          Tag = 5
+          Left = 327
+          Top = 65
+          Width = 47
+          Height = 15
+          Caption = 'Unidade:'
+        end
+        object edtCor: TLabeledEdit
+          Tag = 5
+          Left = 17
+          Top = 83
+          Width = 121
+          Height = 23
+          EditLabel.Width = 22
+          EditLabel.Height = 15
+          EditLabel.Caption = 'Cor:'
+          TabOrder = 2
+          Text = ''
+        end
+        object edtCodigo: TLabeledEdit
+          Tag = 5
+          Left = 17
+          Top = 35
+          Width = 121
+          Height = 23
+          EditLabel.Width = 42
+          EditLabel.Height = 15
+          EditLabel.BiDiMode = bdLeftToRight
+          EditLabel.Caption = 'C'#243'digo:'
+          EditLabel.ParentBiDiMode = False
+          NumbersOnly = True
+          ParentShowHint = False
+          ShowHint = False
+          TabOrder = 0
+          Text = ''
+        end
+        object edtDescricao: TLabeledEdit
+          Tag = 5
+          Left = 183
+          Top = 35
+          Width = 319
+          Height = 23
+          EditLabel.Width = 54
+          EditLabel.Height = 15
+          EditLabel.Caption = 'Descri'#231#227'o:'
+          TabOrder = 1
+          Text = ''
+        end
+        object edtTam: TLabeledEdit
+          Tag = 5
+          Left = 17
+          Top = 132
+          Width = 121
+          Height = 23
+          EditLabel.Width = 53
+          EditLabel.Height = 15
+          EditLabel.Caption = 'Tamanho:'
+          TabOrder = 6
+          Text = ''
+        end
+        object btnCor: TBitBtn
+          Tag = 5
+          Left = 144
+          Top = 82
+          Width = 25
+          Height = 25
+          TabOrder = 3
+          OnClick = btnCorClick
+        end
+        object btnTam: TBitBtn
+          Tag = 5
+          Left = 144
+          Top = 131
+          Width = 25
+          Height = 25
+          TabOrder = 7
+          OnClick = btnTamClick
+        end
+        object edtCusto: TLabeledEdit
+          Tag = 5
+          Left = 183
+          Top = 82
+          Width = 121
+          Height = 23
+          EditLabel.Width = 34
+          EditLabel.Height = 15
+          EditLabel.Caption = 'Custo:'
+          TabOrder = 4
+          Text = ''
+          OnExit = edtCustoExit
+          OnKeyPress = edtCustoKeyPress
+        end
+        object cbUN: TComboBox
+          Tag = 5
+          Left = 327
+          Top = 83
+          Width = 91
+          Height = 23
+          TabOrder = 5
+          Items.Strings = (
+            'UN'
+            'KG'
+            'MIL'
+            'MT'
+            'PC')
+        end
+        object edtPreco: TLabeledEdit
+          Tag = 5
+          Left = 183
+          Top = 132
+          Width = 121
+          Height = 23
+          EditLabel.Width = 33
+          EditLabel.Height = 15
+          EditLabel.Caption = 'Pre'#231'o:'
+          TabOrder = 8
+          Text = ''
+          OnExit = edtPrecoExit
+          OnKeyPress = edtPrecoKeyPress
+        end
+      end
+      object GroupBox3: TGroupBox
+        Left = 18
+        Top = 223
+        Width = 519
+        Height = 225
+        Caption = 'Observa'#231#245'es'
+        TabOrder = 1
+        object edtObs: TLabeledEdit
+          Tag = 5
+          Left = 17
+          Top = 24
+          Width = 485
+          Height = 185
+          AutoSize = False
+          EditLabel.Width = 3
+          EditLabel.Height = 15
+          EditLabel.Caption = ' '
+          TabOrder = 0
+          Text = ''
+        end
+      end
+      object gbImagem: TGroupBox
+        Left = 560
+        Top = 135
+        Width = 101
+        Height = 169
+        Caption = 'Imagem'
+        TabOrder = 2
+        object btnAnexar: TBitBtn
+          Tag = 5
+          Left = 14
+          Top = 35
+          Width = 75
+          Height = 25
+          Caption = 'Anexar'
+          TabOrder = 0
+          OnClick = btnAnexarClick
+        end
+        object btnExpandir: TBitBtn
+          Tag = 5
+          Left = 14
+          Top = 82
+          Width = 75
+          Height = 25
+          Caption = 'Expandir'
+          TabOrder = 1
+          OnClick = btnExpandirClick
+        end
+        object btnExcImg: TBitBtn
+          Tag = 5
+          Left = 14
+          Top = 131
+          Width = 75
+          Height = 25
+          Caption = 'Excluir'
+          TabOrder = 2
+          OnClick = btnExcImgClick
+        end
+      end
+      object gbStatus: TGroupBox
+        Left = 560
+        Top = 48
+        Width = 101
+        Height = 81
+        Caption = 'Status'
+        TabOrder = 3
+        object cbAtivo: TCheckBox
+          Tag = 5
+          Left = 16
+          Top = 23
+          Width = 97
+          Height = 17
+          Caption = 'Ativo'
+          TabOrder = 0
+        end
+        object cbSuspenso: TCheckBox
+          Tag = 5
+          Left = 16
+          Top = 46
+          Width = 97
+          Height = 17
+          Caption = 'Suspenso'
+          TabOrder = 1
+        end
+      end
+      object pnlImagem: TPanel
+        Left = 679
+        Top = 48
+        Width = 330
+        Height = 330
+        TabOrder = 4
+        object Img: TImage
+          Tag = 5
+          Left = 1
+          Top = 1
+          Width = 328
+          Height = 328
+          Align = alClient
+          AutoSize = True
+          Center = True
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 330
+          ExplicitHeight = 330
+        end
+      end
+    end
+  end
+  inherited pnlRodape: TPanel
+    StyleElements = [seFont, seClient, seBorder]
+  end
+  inherited dtListagem: TDataSource
+    Left = 1120
+  end
+  inherited QryListagem: TFDQuery
+    Active = True
+    SQL.Strings = (
+      
+        'SELECT CODIGO, COR, TAM, DESCRICAO, CUSTO, PRECO, UNIDADE, ATIVO' +
+        ', SUSPENSO, OBSERVACAO FROM PA_ITEN_TESTE')
+    Left = 1120
+    Top = 104
+  end
+  object opdImagem: TOpenPictureDialog
+    Filter = 'JPEG Image File (*.jpg)'
+    Left = 1120
+    Top = 176
+  end
+end

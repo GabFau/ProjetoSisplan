@@ -1,0 +1,51 @@
+object frmPesquisa: TfrmPesquisa
+  Left = 0
+  Top = 0
+  Caption = 'Pesquisa'
+  ClientHeight = 390
+  ClientWidth = 624
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  TextHeight = 15
+  object DBGrid1: TDBGrid
+    Left = 0
+    Top = 0
+    Width = 624
+    Height = 336
+    Align = alClient
+    TabOrder = 0
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -12
+    TitleFont.Name = 'Segoe UI'
+    TitleFont.Style = []
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 336
+    Width = 624
+    Height = 54
+    Align = alBottom
+    TabOrder = 1
+    object btnConfirmar: TBitBtn
+      Left = 14
+      Top = 14
+      Width = 80
+      Height = 30
+      Caption = 'Confirmar'
+      TabOrder = 0
+    end
+    object btnCancelar: TBitBtn
+      Left = 110
+      Top = 14
+      Width = 80
+      Height = 30
+      Caption = 'Cancelar'
+      TabOrder = 1
+    end
+  end
+end

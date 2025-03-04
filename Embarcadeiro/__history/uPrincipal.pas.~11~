@@ -1,0 +1,43 @@
+unit uPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, uDTMConexao;
+
+type
+  TFrmPrincipal = class(TForm)
+    MainMenu: TMainMenu;
+    Cadastro1: TMenuItem;
+    CadProduto: TMenuItem;
+    CadPedido: TMenuItem;
+    N1: TMenuItem;
+    mnuFechar: TMenuItem;
+    procedure mnuFecharClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmPrincipal: TFrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFrmPrincipal.FormCreate(Sender: TObject);
+begin
+dtmPrincipal := TdtmPrincipal.Create(Self);
+dtmPrincipal.ConexaoDB.Connected:=true;
+end;
+
+procedure TFrmPrincipal.mnuFecharClick(Sender: TObject);
+begin
+Close;
+end;
+
+end.

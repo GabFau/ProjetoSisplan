@@ -1,0 +1,436 @@
+unit cCadProduto;
+
+interface
+
+uses
+  System.Classes,
+  Vcl.Controls,
+  Vcl.ExtCtrls,
+  Vcl.Dialogs,
+  FireDAC.Stan.Intf,
+  FireDAC.Stan.Option,
+  FireDAC.Stan.Error,
+  FireDAC.UI.Intf,
+  FireDAC.Phys.Intf,
+  FireDAC.Stan.Def,
+  FireDAC.Stan.Pool,
+  FireDAC.Stan.Async,
+  FireDAC.Phys,
+  FireDAC.Phys.FB,
+  FireDAC.Phys.FBDef,
+  FireDAC.VCLUI.Wait,
+  FireDAC.Comp.UI,
+  FireDAC.Phys.IBBase,
+  Data.DB,
+  FireDAC.Comp.Client,
+  System.SysUtils,
+  Vcl.Graphics,
+  Vcl.Imaging.Jpeg,
+  System.IOUtils;
+
+type
+  TCadProduto = class
+  private
+    ConexaoDB: TFDConnection;
+    F_Codigo:    Integer;
+    F_Descricao: String;
+    F_Cor:       String;
+    F_Tam:       String;
+    F_Custo:     Double;
+    F_Preco:     Double;
+    F_Ativo:     String;
+    F_Suspenso:  String;
+    F_Observacao:String;
+    F_Unidade:   String;
+    F_Imagem:    TGraphic;
+    function getCodigo: Integer;
+    function getDescricao: String;
+    procedure SetCodigo(const Value: Integer);
+    procedure SetDescricao(const Value: String);
+    function getCor: String;
+    function getTam: String;
+    procedure SetCor(const Value: String);
+    procedure SetTam(const Value: String);
+    function getAtivo: String;
+    function getCusto: Double;
+    function getObservacao: String;
+    function getPreco: Double;
+    function getSuspenso: String;
+    procedure SetAtivo(const Value: String);
+    procedure SetCusto(const Value: Double);
+    procedure SetObservacao(const Value: String);
+    procedure SetPreco(const Value: Double);
+    procedure SetSuspenso(const Value: String);
+    procedure SetImagem(const Value: TGraphic);
+  public
+    constructor Create(aConexao: TFDConnection);
+    destructor Destroy; override;
+    function Incluir: Boolean;
+    function Alterar: Boolean;
+    function Excluir: Boolean;
+    function Selecionar(id: Integer): Boolean;
+    property Codigo: Integer read getCodigo write SetCodigo;
+    property Descricao: String read getDescricao write SetDescricao;
+    property Cor: String read getCor write SetCor;
+    property Tam: String read getTam write SetTam;
+    property Custo: Double read getCusto write SetCusto;
+    property Preco: Double read getPreco write SetPreco;
+    property Ativo: String read getAtivo write SetAtivo;
+    property Suspenso: String read getSuspenso write SetSuspenso;
+    property Observacao: String read getObservacao write SetObservacao;
+    property Unidade: string read F_Unidade write F_Unidade;
+    property Imagem: TGraphic read F_Imagem write SetImagem;
+  end;
+
+implementation
+
+{ TCadProduto }
+
+{$region 'Contructor e Destructor'}
+constructor TCadProduto.Create(aConexao: TFDConnection);
+begin
+  ConexaoDB := aConexao;
+  F_Imagem := nil;
+end;
+
+destructor TCadProduto.Destroy;
+begin
+  inherited;
+end;
+{$endregion 'Contructor e Destructor'}
+
+{$region 'Incluir'}
+function TCadProduto.Incluir: Boolean;
+var
+  Qry: TFDQuery;
+  MemStream: TMemoryStream;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    if not ConexaoDB.Connected then
+    begin
+      ShowMessage('Erro: Conexão com o banco não está ativa!');
+      Exit;
+    end;
+
+    ShowMessage('Incluindo produto com os seguintes dados:' +
+      sLineBreak + 'Código: ' + IntToStr(Self.Codigo) +
+      sLineBreak + 'Descrição: ' + Self.Descricao +
+      sLineBreak + 'Cor: ' + Self.Cor +
+      sLineBreak + 'Tamanho: ' + Self.Tam +
+      sLineBreak + 'Custo: ' + FloatToStr(Self.Custo) +
+      sLineBreak + 'Preço: ' + FloatToStr(Self.Preco) +
+      sLineBreak + 'Ativo: ' + Self.Ativo +
+      sLineBreak + 'Suspenso: ' + Self.Suspenso +
+      sLineBreak + 'Observação: ' + Self.Observacao);
+
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text :=
+      'INSERT INTO PA_ITEN_TESTE (CODIGO, DESCRICAO, COR, TAM, CUSTO, PRECO, ATIVO, SUSPENSO, OBSERVACAO, UNIDADE, IMAGEM) ' +
+      'VALUES (:CODIGO, :DESCRICAO, :COR, :TAM, :CUSTO, :PRECO, :ATIVO, :SUSPENSO, :OBSERVACAO, :UNIDADE, :IMAGEM)';
+    Qry.ParamByName('CODIGO').AsInteger := Self.Codigo;
+    Qry.ParamByName('DESCRICAO').AsString := Self.Descricao;
+    Qry.ParamByName('COR').AsString := Self.Cor;
+    Qry.ParamByName('TAM').AsString := Self.Tam;
+    Qry.ParamByName('CUSTO').AsFloat := Self.Custo;
+    Qry.ParamByName('PRECO').AsFloat := Self.Preco;
+    Qry.ParamByName('ATIVO').AsString := Self.Ativo;
+    Qry.ParamByName('SUSPENSO').AsString := Self.Suspenso;
+    Qry.ParamByName('OBSERVACAO').AsString := Self.Observacao;
+    Qry.ParamByName('UNIDADE').AsString := Self.Unidade;
+
+    if Assigned(F_Imagem) then
+    begin
+      MemStream := TMemoryStream.Create;
+      try
+        F_Imagem.SaveToStream(MemStream);
+        MemStream.Position := 0;
+        Qry.ParamByName('IMAGEM').LoadFromStream(MemStream, ftBlob);
+      finally
+        MemStream.Free;
+      end;
+    end;
+
+    Qry.ExecSQL;
+    Result := True;
+  except
+    on E: Exception do
+      ShowMessage('Erro ao incluir o produto: ' + E.Message);
+  end;
+  Qry.Free;
+end;
+{$endregion 'Incluir'}
+
+{$region 'Alterar'}
+function TCadProduto.Alterar: Boolean;
+var
+  Qry: TFDQuery;
+  MemStream: TMemoryStream;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    if not ConexaoDB.Connected then
+    begin
+      ShowMessage('Erro: Conexão com o banco não está ativa!');
+      Exit;
+    end;
+
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text :=
+      'UPDATE PA_ITEN_TESTE SET DESCRICAO = :DESCRICAO, COR = :COR, TAM = :TAM, CUSTO = :CUSTO, PRECO = :PRECO, ' +
+      'ATIVO = :ATIVO, SUSPENSO = :SUSPENSO, OBSERVACAO = :OBSERVACAO, UNIDADE = :UNIDADE, IMAGEM = :IMAGEM ' +
+      'WHERE CODIGO = :CODIGO';
+    Qry.ParamByName('CODIGO').AsInteger := Self.Codigo;
+    Qry.ParamByName('DESCRICAO').AsString := Self.Descricao;
+    Qry.ParamByName('COR').AsString := Self.Cor;
+    Qry.ParamByName('TAM').AsString := Self.Tam;
+    Qry.ParamByName('CUSTO').AsFloat := Self.Custo;
+    Qry.ParamByName('PRECO').AsFloat := Self.Preco;
+    Qry.ParamByName('ATIVO').AsString := Self.Ativo;
+    Qry.ParamByName('SUSPENSO').AsString := Self.Suspenso;
+    Qry.ParamByName('OBSERVACAO').AsString := Self.Observacao;
+    Qry.ParamByName('UNIDADE').AsString := Self.Unidade;
+
+    if Assigned(F_Imagem) then
+    begin
+      MemStream := TMemoryStream.Create;
+      try
+        F_Imagem.SaveToStream(MemStream);
+        MemStream.Position := 0;
+        Qry.ParamByName('IMAGEM').LoadFromStream(MemStream, ftBlob);
+      finally
+        MemStream.Free;
+      end;
+    end
+    else
+      Qry.ParamByName('IMAGEM').Clear;
+
+    Qry.ExecSQL;
+    Result := True;
+  except
+    on E: Exception do
+      ShowMessage('Erro ao alterar o produto: ' + E.Message);
+  end;
+  Qry.Free;
+end;
+{$endregion 'Alterar'}
+
+{$region 'Excluir'}
+function TCadProduto.Excluir: Boolean;
+var
+  Qry: TFDQuery;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    if not ConexaoDB.Connected then
+    begin
+      ShowMessage('Erro: Conexão com o banco não está ativa!');
+      Exit;
+    end;
+
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text := 'DELETE FROM PA_ITEN_TESTE WHERE CODIGO = :CODIGO';
+    Qry.ParamByName('CODIGO').AsInteger := Self.Codigo;
+    Qry.ExecSQL;
+ShowMessage('Linhas afetadas: ' + IntToStr(Qry.RowsAffected));
+    Result := True;
+  except
+    on E: Exception do
+      ShowMessage('Erro ao excluir o produto: ' + E.Message);
+  end;
+  Qry.Free;
+end;
+{$endregion 'Excluir'}
+
+{$region 'Selecionar'}
+function TCadProduto.Selecionar(id: Integer): Boolean;
+var
+  Qry: TFDQuery;
+  MemStream: TMemoryStream;
+  ImgType: Byte;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text :=
+      'SELECT CODIGO, DESCRICAO, COR, TAM, CUSTO, PRECO, ATIVO, SUSPENSO, OBSERVACAO, UNIDADE, IMAGEM ' +
+      'FROM PA_ITEN_TESTE WHERE CODIGO = :CODIGO';
+    Qry.ParamByName('CODIGO').AsInteger := id;
+    Qry.Open;
+
+    if not Qry.IsEmpty then
+    begin
+      Self.Codigo      := Qry.FieldByName('CODIGO').AsInteger;
+      Self.Descricao   := Qry.FieldByName('DESCRICAO').AsString;
+      Self.Cor         := Qry.FieldByName('COR').AsString;
+      Self.Tam         := Qry.FieldByName('TAM').AsString;
+      Self.Custo       := Qry.FieldByName('CUSTO').AsFloat;
+      Self.Preco       := Qry.FieldByName('PRECO').AsFloat;
+      Self.Ativo       := Qry.FieldByName('ATIVO').AsString;
+      Self.Suspenso    := Qry.FieldByName('SUSPENSO').AsString;
+      Self.Observacao  := Qry.FieldByName('OBSERVACAO').AsString;
+      Self.Unidade     := Qry.FieldByName('UNIDADE').AsString;
+
+
+      if not Qry.FieldByName('IMAGEM').IsNull then
+      begin
+        MemStream := TMemoryStream.Create;
+        try
+          TBlobField(Qry.FieldByName('IMAGEM')).SaveToStream(MemStream);
+          if MemStream.Size > 0 then
+          begin
+            MemStream.Position := 0;
+            MemStream.Read(ImgType, 1);
+            MemStream.Position := 0;
+
+            if ImgType = $FF then
+            begin
+              FreeAndNil(F_Imagem);
+              F_Imagem := TJPEGImage.Create;
+              try
+                TJPEGImage(F_Imagem).LoadFromStream(MemStream);
+              except
+                on E: EInvalidGraphic do
+                begin
+                  ShowMessage('Erro ao carregar a imagem JPEG: ' + E.Message);
+                  FreeAndNil(F_Imagem);
+                end;
+              end;
+            end
+            else if ImgType = $42 then
+            begin
+              FreeAndNil(F_Imagem);
+              F_Imagem := TBitmap.Create;
+              TBitmap(F_Imagem).LoadFromStream(MemStream);
+            end
+            else
+              raise Exception.Create('Formato de imagem desconhecido.');
+          end;
+        finally
+          MemStream.Free;
+        end;
+      end
+      else
+      begin
+        FreeAndNil(F_Imagem);
+      end;
+
+      Result := True;
+    end;
+  except
+    on E: Exception do
+      ShowMessage('Erro ao selecionar o produto: ' + E.Message);
+  end;
+  Qry.Free;
+end;
+{$endregion 'Selecionar'}
+
+{ Métodos de acesso }
+
+{$region 'Sets'}
+procedure TCadProduto.SetAtivo(const Value: String);
+begin
+  F_Ativo := Value;
+end;
+
+procedure TCadProduto.SetCusto(const Value: Double);
+begin
+  F_Custo := Value;
+end;
+
+procedure TCadProduto.SetCodigo(const Value: Integer);
+begin
+  F_Codigo := Value;
+end;
+
+procedure TCadProduto.SetDescricao(const Value: String);
+begin
+  F_Descricao := Value;
+end;
+
+procedure TCadProduto.SetImagem(const Value: TGraphic);
+begin
+  F_Imagem := Value;
+end;
+
+procedure TCadProduto.SetObservacao(const Value: String);
+begin
+  F_Observacao := Value;
+end;
+
+procedure TCadProduto.SetPreco(const Value: Double);
+begin
+  F_Preco := Value;
+end;
+
+procedure TCadProduto.SetSuspenso(const Value: String);
+begin
+  F_Suspenso := Value;
+end;
+
+procedure TCadProduto.SetTam(const Value: String);
+begin
+  F_Tam := Value;
+end;
+
+procedure TCadProduto.SetCor(const Value: String);
+begin
+  F_Cor := Value;
+end;
+
+{$endregion 'Sets'}
+
+{$region 'Gets'}
+function TCadProduto.getAtivo: String;
+begin
+  Result := F_Ativo;
+end;
+
+function TCadProduto.getCusto: Double;
+begin
+  Result := F_Custo;
+end;
+
+function TCadProduto.getCodigo: Integer;
+begin
+  Result := F_Codigo;
+end;
+
+function TCadProduto.getDescricao: String;
+begin
+  Result := F_Descricao;
+end;
+
+function TCadProduto.getObservacao: String;
+begin
+  Result := F_Observacao;
+end;
+
+function TCadProduto.getPreco: Double;
+begin
+  Result := F_Preco;
+end;
+
+function TCadProduto.getSuspenso: String;
+begin
+  Result := F_Suspenso;
+end;
+
+function TCadProduto.getTam: String;
+begin
+  Result := F_Tam;
+end;
+
+function TCadProduto.getCor: String;
+begin
+  Result := F_Cor;
+end;
+
+{$endregion 'Gets'}
+
+end.
+

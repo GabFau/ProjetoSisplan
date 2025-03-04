@@ -1,0 +1,24 @@
+object dtmConexao: TdtmConexao
+  Height = 480
+  Width = 640
+  object dtmPrincipal: TFDConnection
+    Params.Strings = (
+      
+        'Database=C:\Users\gf353\OneDrive\Documentos\Projeto_Prog\Projeto' +
+        '1\BASE\BASE.FDB'
+      'User_Name=SYSDBA'
+      'Password=masterkey'
+      'Server=127.0.0.1'
+      'Port=3050'
+      'DriverID=FB')
+    Connected = True
+    LoginPrompt = False
+    Left = 48
+    Top = 32
+  end
+  object dtmFBLink: TFDPhysFBDriverLink
+    VendorLib = 'C:\Program Files (x86)\Firebird\Firebird_3_0\fbclient.dll'
+    Left = 120
+    Top = 32
+  end
+end

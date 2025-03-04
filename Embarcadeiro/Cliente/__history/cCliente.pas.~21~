@@ -1,0 +1,540 @@
+unit cCliente;
+
+interface
+
+uses
+  System.Classes,
+  Vcl.Dialogs,
+  FireDAC.Comp.Client,
+  FireDAC.Stan.Intf,
+  FireDAC.Stan.Option,
+  FireDAC.Stan.Error,
+  Data.DB,
+  System.SysUtils;
+
+type
+  TCadCliente = class
+
+  private
+   { Private declarations }
+    ConexaoDB: TFDConnection;
+    F_CodCLI: Integer;
+    F_Nome:          String;
+    F_CPF_CNPJ:      String;
+    F_IE:            String;
+    F_Classificacao: String;
+    F_CEP:           String;
+    F_Estado:        String;
+    F_Cidade:        String;
+    F_Rua:           String;
+    F_Bairro:        String;
+    F_Numero:        String;
+    F_Complemento:   String;
+    F_Email:         String;
+    F_Telefone:      String;
+    F_Observacao:    String;
+    F_Cliente:       String;
+    F_Funcionario:   String;
+    F_Terceiro:      String;
+    F_Representante: String;
+    F_ATivo:         String;
+    F_Suspenso:      String;
+    function GetCodCLI: Integer;
+    procedure SetCodCLI(const Value: Integer);
+    procedure SetAtivo(const Value: String);
+    procedure SetBairro(const Value: String);
+    procedure SetCep(const Value: String);
+    procedure SetCidade(const Value: String);
+    procedure SetCliente(const Value: String);
+    procedure SetComplemento(const Value: String);
+    procedure SetCPF_CNPJ(const Value: String);
+    procedure SetEmail(const Value: String);
+    procedure SetEstado(const Value: String);
+    procedure SetFuncionario(const Value: String);
+    procedure SetIE(const Value: String);
+    procedure SetNome(const Value: String);
+    procedure SetNumero(const Value: String);
+    procedure SetObservacao(const Value: String);
+    procedure SetRepresentante(const Value: String);
+    procedure SetRua(const Value: String);
+    procedure SetSuspenso(const Value: String);
+    procedure SetTelefone(const Value: String);
+    procedure SetTerceiro(const Value: String);
+    function getAtivo: String;
+    function getBairro: String;
+    function getCEP: String;
+    function getCidade: String;
+    function getCliente: String;
+    function getComplemento: String;
+    function getCPF_CNPJ: String;
+    function getEmail: String;
+    function getEstado: String;
+    function getFuncionario: String;
+    function getIE: String;
+    function getNome: String;
+    function getNumero: String;
+    function getObservacao: String;
+    function getRepresentante: String;
+    function getRua: String;
+    function getSuspenso: String;
+    function getTelefone: String;
+    function getTerceiro: String;
+
+  public
+  { Public declarations }
+    constructor Create(aConexao: TFDConnection);
+    destructor Destroy; override;
+    function Incluir:                 Boolean;
+    function Alterar:                 Boolean;
+    function Excluir:                 Boolean;
+    function Selecionar(id: Integer): Boolean;
+    property CodCLI:        Integer read GetCodCli        write SetCodCLI;
+    property Nome:          String  read getNome          write SetNome;
+    property CPF_CNPJ:      String  read getCPF_CNPJ      write SetCPF_CNPJ;
+    property IE:            String  read getIE            write SetIE;
+    property Classificacao: String  read F_Classificacao  write F_Classificacao;
+    property CEP:           String  read getCEP           write SetCEP;
+    property Estado:        String  read getEstado        write SetEstado;
+    property Cidade:        String  read getCidade        write SetCidade;
+    property Rua:           String  read getRua           write SetRua;
+    property Bairro:        String  read getBairro        write SetBairro;
+    property Numero:        String  read getNumero        write SetNumero;
+    property Complemento:   String  read getComplemento   write SetComplemento;
+    property Email:         String  read getEmail         write SetEmail;
+    property Telefone:      String  read getTelefone      write SetTelefone;
+    property Observacao:    String  read getObservacao    write SetObservacao;
+    property Cliente:       String  read getCliente       write SetCliente;
+    property Funcionario:   String  read getFuncionario   write SetFuncionario;
+    property Terceiro:      String  read getTerceiro      write SetTerceiro;
+    property Representante: String  read getRepresentante write SetRepresentante;
+    property Ativo:         String  read getAtivo         write SetAtivo;
+    property Suspenso:      String  read getSuspenso      write SetSuspenso;
+  end;
+
+implementation
+
+{ TCadCliente }
+
+{$region 'Contructor e Destructor'}
+constructor TCadCliente.Create(aConexao: TFDConnection);
+begin
+  ConexaoDB := aConexao;
+end;
+
+destructor TCadCliente.Destroy;
+begin
+  inherited;
+end;
+{$endregion 'Contructor e Destructor'}
+
+{$region 'Incluir'}
+function TCadCliente.Incluir: Boolean;
+var
+  Qry: TFDQuery;
+  MemStream: TMemoryStream;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    if not ConexaoDB.Connected then
+    begin
+      ShowMessage('Erro: Conexão com o banco não está ativa!');
+      Exit;
+    end;
+
+    ShowMessage('Incluindo cliente com os seguintes dados:' +
+      sLineBreak + 'CodCli: ' + IntToStr(Self.CodCli) +
+      sLineBreak + 'Nome: ' + Self.Nome +
+      sLineBreak + 'CPF_CNPJ: ' + Self.CPF_CNPJ +
+      sLineBreak + 'IE: ' + Self.IE +
+      sLineBreak + 'CEP: ' + Self.CEP +
+      sLineBreak + 'Estado: ' + Self.Estado +
+      sLineBreak + 'Cidade: ' + Self.Cidade +
+      sLineBreak + 'Rua: ' + Self.Rua +
+      sLineBreak + 'Bairro: ' + Self.Bairro +
+      sLineBreak + 'Endereco_Num: ' + Self.Numero +
+      sLineBreak + 'Complemento: ' + Self.Complemento +
+      sLineBreak + 'Email: ' + Self.Email +
+      sLineBreak + 'Telefone: ' + Self.Telefone +
+      sLineBreak + 'Observacao: ' + Self.Observacao +
+      sLineBreak + 'Cliente: ' + Self.Cliente +
+      sLineBreak + 'Funcionario: ' + Self.Funcionario +
+      sLineBreak + 'Terceiro: ' + Self.Terceiro +
+      sLineBreak + 'Representante: ' + Self.Representante +
+      sLineBreak + 'Ativo: ' + Self.Ativo +
+      sLineBreak + 'Suspenso: ' + Self.Ativo);
+
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text :=
+      'INSERT INTO CLIENTE (CODCLI, NOME, CPF_CNPJ, IE, CLASSIFICACAO, CEP, ESTADO, CIDADE, RUA, BAIRRO, ENDERECO_NUM, ENDERECO_COMPL, EMAIL, TELEFONE, OBS, CTG_CLI, CTG_TERC, CTG_FUN, CTG_REPRES, ATIVO, SUSPENSO) ' +
+      'VALUES (:CODCLI, :NOME, :CPF_CNPJ, :IE, :CLASSIFICACAO, :CEP, :ESTADO, :CIDADE, :RUA, :BAIRRO, :ENDERECO_NUM, :ENDERECO_COMPL, :EMAIL, :TELEFONE, :OBS, :CTG_CLI, :CTG_TERC, :CTG_FUN, :CTG_REPRES, :ATIVO, :SUSPENSO)';
+    Qry.ParamByName('CODCLI').AsInteger := Self.CodCli;
+    Qry.ParamByName('NOME').AsString := Self.Nome;
+    Qry.ParamByName('CPF_CNPJ').AsString := Self.CPF_CNPJ;
+    Qry.ParamByName('IE').AsString := Self.IE;
+    Qry.ParamByName('CLASSIFICACAO').AsString := Self.Classificacao;
+    Qry.ParamByName('CEP').AsString := Self.CEP;
+    Qry.ParamByName('ESTADO').AsString := Self.Estado;
+    Qry.ParamByName('CIDADE').AsString := Self.Cidade;
+    Qry.ParamByName('RUA').AsString := Self.Rua;
+    Qry.ParamByName('BAIRRO').AsString := Self.Bairro;
+    Qry.ParamByName('ENDERECO_NUM').AsString := Self.Numero;
+    Qry.ParamByName('ENDERECO_COMPL').AsString := Self.Complemento;
+    Qry.ParamByName('EMAIL').AsString := Self.Email;
+    Qry.ParamByName('TELEFONE').AsString := Self.Telefone;
+    Qry.ParamByName('OBS').AsString := Self.Observacao;
+    Qry.ParamByName('CTG_CLI').AsString := Self.Cliente;
+    Qry.ParamByName('CTG_TERC').AsString := Self.Terceiro;
+    Qry.ParamByName('CTG_FUN').AsString := Self.Funcionario;
+    Qry.ParamByName('CTG_REPRES').AsString := Self.Representante;
+    Qry.ParamByName('ATIVO').AsString := Self.Ativo;
+    Qry.ParamByName('SUSPENSO').AsString := Self.Suspenso;
+    Qry.ExecSQL;
+    Result := True;
+  except
+    on E: Exception do
+      ShowMessage('Erro ao incluir cliente: ' + E.Message);
+  end;
+  Qry.Free;
+end;
+{$endregion 'Incluir'}
+
+{$region 'Alterar'}
+function TCadCliente.Alterar: Boolean;
+var
+  Qry: TFDQuery;
+  MemStream: TMemoryStream;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    if not ConexaoDB.Connected then
+    begin
+      ShowMessage('Erro: Conexão com o banco não está ativa!');
+      Exit;
+    end;
+
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text :=
+      'UPDATE CLIENTE SET NOME = :NOME, CPF_CNPJ = :CPF_CNPJ, IE = :IE, CLASSIFICACAO = :CLASSIFICACAO, CEP = :CEP, ESTADO = :ESTADO, CIDADE = :CIDADE, RUA = :RUA, BAIRRO = :BAIRRO, ' +
+      'ENDERECO_NUM = :ENDERECO_NUM, ENDERECO_COMPL = :ENDERECO_COMPL, EMAIL = :EMAIL, TELEFONE = :TELEFONE, OBS = :OBS, CTG_CLI = :CTG_CLI, CTG_TERC = :CTG_TERC, CTG_FUN = :CTG_FUN, ' +
+      'CTG_REPRES = :CTG_REPRES, ATIVO = :ATIVO, SUSPENSO = :SUSPENSO ' +
+      'WHERE CODCLI = :CODCLI';
+    Qry.ParamByName('CODCLI').AsInteger := Self.CodCli;
+    Qry.ParamByName('NOME').AsString := Self.Nome;
+    Qry.ParamByName('CPF_CNPJ').AsString := Self.CPF_CNPJ;
+    Qry.ParamByName('IE').AsString := Self.IE;
+    Qry.ParamByName('CLASSIFICACAO').AsString := Self.Classificacao;
+    Qry.ParamByName('CEP').AsString := Self.CEP;
+    Qry.ParamByName('ESTADO').AsString := Self.Estado;
+    Qry.ParamByName('CIDADE').AsString := Self.Cidade;
+    Qry.ParamByName('RUA').AsString := Self.Rua;
+    Qry.ParamByName('BAIRRO').AsString := Self.Bairro;
+    Qry.ParamByName('ENDERECO_NUM').AsString := Self.Numero;
+    Qry.ParamByName('ENDERECO_COMPL').AsString := Self.Complemento;
+    Qry.ParamByName('EMAIL').AsString := Self.Email;
+    Qry.ParamByName('TELEFONE').AsString := Self.Telefone;
+    Qry.ParamByName('OBS').AsString := Self.Observacao;
+    Qry.ParamByName('CTG_CLI').AsString := Self.Cliente;
+    Qry.ParamByName('CTG_TERC').AsString := Self.Terceiro;
+    Qry.ParamByName('CTG_FUN').AsString := Self.Funcionario;
+    Qry.ParamByName('CTG_REPRES').AsString := Self.Representante;
+    Qry.ParamByName('ATIVO').AsString := Self.Ativo;
+    Qry.ParamByName('SUSPENSO').AsString := Self.Suspenso;
+    Qry.ExecSQL;
+    Result := True;
+  except
+    on E: Exception do
+      ShowMessage('Erro ao alterar o produto: ' + E.Message);
+  end;
+  Qry.Free;
+end;
+{$endregion 'Alterar'}
+
+{$region 'Excluir'}
+function TCadCliente.Excluir: Boolean;
+var
+  Qry: TFDQuery;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    if not ConexaoDB.Connected then
+    begin
+      ShowMessage('Erro: Conexão com o banco não está ativa!');
+      Exit;
+    end;
+
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text := 'DELETE FROM CLIENTE WHERE CODCLI = :CODCLI';
+    Qry.ParamByName('CODCLI').AsInteger := Self.CodCli;
+    Qry.ExecSQL;
+
+    Result := Qry.RowsAffected > 0;
+  except
+    on E: Exception do
+      ShowMessage('Erro ao excluir cliente: ' + E.Message);
+  end;
+  Qry.Free;
+end;
+
+
+{$endregion 'Excluir'}
+
+{$region 'Selecionar'}
+function TCadCliente.Selecionar(id: Integer): Boolean;
+var
+  Qry: TFDQuery;
+  MemStream: TMemoryStream;
+  ImgType: Byte;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text :=
+      'SELECT CODCLI AS CODIGO, NOME, CPF_CNPJ, IE, CLASSIFICACAO, CEP, ESTADO, CIDADE, RUA, BAIRRO, ENDERECO_NUM, ENDERECO_COMPL, EMAIL, TELEFONE, OBS, CTG_CLI, CTG_TERC, CTG_FUN, CTG_REPRES, ATIVO, SUSPENSO ' +
+      'FROM CLIENTE WHERE CODCLI = :CODCLI';
+    Qry.ParamByName('CODCLI').AsInteger := id;
+    Qry.Open;
+
+    if not Qry.IsEmpty then
+    begin
+      Self.CODCLI          := Qry.FieldByName('CODIGO').AsInteger;
+      Self.NOME            := Qry.FieldByName('NOME').AsString;
+      Self.CPF_CNPJ        := Qry.FieldByName('CPF_CNPJ').AsString;
+      Self.IE              := Qry.FieldByName('IE').AsString;
+      Self.CLASSIFICACAO   := Qry.FieldByName('CLASSIFICACAO').AsString;
+      Self.CEP             := Qry.FieldByName('CEP').AsString;
+      Self.ESTADO          := Qry.FieldByName('ESTADO').AsString;
+      Self.CIDADE          := Qry.FieldByName('CIDADE').AsString;
+      Self.RUA             := Qry.FieldByName('RUA').AsString;
+      Self.BAIRRO          := Qry.FieldByName('BAIRRO').AsString;
+      Self.NUMERO          := Qry.FieldByName('ENDERECO_NUM').AsString;
+      Self.COMPLEMENTO     := Qry.FieldByName('ENDERECO_COMPL').AsString;
+      Self.EMAIL           := Qry.FieldByName('EMAIL').AsString;
+      Self.TELEFONE        := Qry.FieldByName('TELEFONE').AsString;
+      Self.OBSERVACAO      := Qry.FieldByName('OBS').AsString;
+      Self.CLIENTE         := Qry.FieldByName('CTG_CLI').AsString;
+      Self.TERCEIRO        := Qry.FieldByName('CTG_TERC').AsString;
+      Self.FUNCIONARIO     := Qry.FieldByName('CTG_FUN').AsString;
+      Self.REPRESENTANTE   := Qry.FieldByName('CTG_REPRES').AsString;
+      Self.ATIVO           := Qry.FieldByName('ATIVO').AsString;
+      Self.SUSPENSO        := Qry.FieldByName('SUSPENSO').AsString;
+      Result := True;
+    end;
+  except
+    on E: Exception do
+      ShowMessage('Erro ao selecionar o produto: ' + E.Message);
+  end;
+  Qry.Free;
+end;
+{$endregion 'Selecionar'}
+
+{ Métodos de acesso }
+
+{$region 'Sets'}
+procedure TCadCliente.SetCodCLI(const Value: Integer);
+begin
+  F_CodCLI := Value;
+end;
+
+procedure TCadCliente.SetNome(const Value: String);
+begin
+  F_Nome := Value;
+end;
+
+procedure TCadCliente.SetCPF_CNPJ(const Value: String);
+begin
+  F_CPF_CNPJ := Value;
+end;
+
+procedure TCadCliente.SetIE(const Value: String);
+begin
+  F_IE := Value;
+end;
+
+procedure TCadCliente.SetCEP(const Value: String);
+begin
+  F_CEP := Value;
+end;
+
+procedure TCadCliente.SetEstado(const Value: String);
+begin
+  F_Estado := Value;
+end;
+
+procedure TCadCliente.SetCidade(const Value: String);
+begin
+  F_Cidade := Value;
+end;
+
+procedure TCadCliente.SetRua(const Value: String);
+begin
+  F_Rua := Value;
+end;
+
+procedure TCadCliente.SetBairro(const Value: String);
+begin
+  F_Bairro := Value;
+end;
+
+procedure TCadCliente.SetNumero(const Value: String);
+begin
+  F_Numero := Value;
+end;
+
+procedure TCadCliente.SetComplemento(const Value: String);
+begin
+  F_Complemento := Value;
+end;
+
+procedure TCadCliente.SetEmail(const Value: String);
+begin
+  F_Email := Value;
+end;
+
+procedure TCadCliente.SetTelefone(const Value: String);
+begin
+  F_Telefone := Value;
+end;
+
+procedure TCadCliente.SetObservacao(const Value: String);
+begin
+  F_Observacao := Value;
+end;
+
+procedure TCadCliente.SetCliente(const Value: String);
+begin
+  F_Cliente := Value;
+end;
+
+procedure TCadCliente.SetFuncionario(const Value: String);
+begin
+  F_Funcionario := Value;
+end;
+
+procedure TCadCliente.SetTerceiro(const Value: String);
+begin
+  F_Terceiro := Value;
+end;
+
+procedure TCadCliente.SetRepresentante(const Value: String);
+begin
+  F_Representante := Value;
+end;
+
+procedure TCadCliente.SetAtivo(const Value: String);
+begin
+  F_Ativo := Value;
+end;
+
+procedure TCadCliente.SetSuspenso(const Value: String);
+begin
+  F_Suspenso := Value;
+end;
+{$endregion 'Sets'}
+
+{$region 'Gets'}
+function TCadCliente.GetCodCLI: Integer;
+begin
+  Result := F_CodCLI;
+end;
+
+function TCadCliente.getNome: String;
+begin
+  Result := F_Nome;
+end;
+
+function TCadCliente.getCPF_CNPJ: String;
+begin
+  Result := F_CPF_CNPJ;
+end;
+
+function TCadCliente.getIE: String;
+begin
+  Result := F_IE;
+end;
+
+function TCadCliente.getCEP: String;
+begin
+  Result := F_CEP;
+end;
+
+function TCadCliente.getEstado: String;
+begin
+  Result := F_Estado;
+end;
+
+function TCadCliente.getCidade: String;
+begin
+  Result := F_Cidade;
+end;
+
+function TCadCliente.getRua: String;
+begin
+  Result := F_Rua;
+end;
+
+function TCadCliente.getBairro: String;
+begin
+  Result := F_Bairro;
+end;
+
+function TCadCliente.getNumero: String;
+begin
+  Result := F_Numero;
+end;
+
+function TCadCliente.getComplemento: String;
+begin
+  Result := F_Complemento;
+end;
+
+function TCadCliente.getEmail: String;
+begin
+  Result := F_Email;
+end;
+
+function TCadCliente.getTelefone: String;
+begin
+  Result := F_Telefone;
+end;
+
+function TCadCliente.getObservacao: String;
+begin
+  Result := F_Observacao;
+end;
+
+function TCadCliente.getCliente: String;
+begin
+  Result := F_Cliente;
+end;
+
+function TCadCliente.getFuncionario: String;
+begin
+  Result := F_Funcionario;
+end;
+
+function TCadCliente.getTerceiro: String;
+begin
+  Result := F_Terceiro;
+end;
+
+function TCadCliente.getRepresentante: String;
+begin
+  Result := F_Representante;
+end;
+
+function TCadCliente.getAtivo: String;
+begin
+  Result := F_Ativo;
+end;
+
+function TCadCliente.getSuspenso: String;
+begin
+  Result := F_Suspenso;
+end;
+{$endregion 'Gets'}
+end.
+

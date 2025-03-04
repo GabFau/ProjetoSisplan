@@ -1,0 +1,195 @@
+unit cCadCategoria;
+
+interface
+
+uses System.Classes,
+     Vcl.Controls,
+     Vcl.ExtCtrls,
+     Vcl.Dialogs,
+     FireDAC.Stan.Intf,
+     FireDAC.Stan.Option,
+     FireDAC.Stan.Error,
+     FireDAC.UI.Intf,
+     FireDAC.Phys.Intf,
+     FireDAC.Stan.Def,
+     FireDAC.Stan.Pool,
+     FireDAC.Stan.Async,
+     FireDAC.Phys,
+     FireDAC.Phys.FB,
+     FireDAC.Phys.FBDef,
+     FireDAC.VCLUI.Wait,
+     FireDAC.Comp.UI,
+     FireDAC.Phys.IBBase,
+     Data.DB,
+     FireDAC.Comp.Client,
+     System.SysUtils;
+
+type
+  TCategoria = class
+
+  private
+  ConexaoDB:TFDConnection;
+  F_Codigo:Integer;
+  F_Descricao:String;
+    function getCodigo: Integer;
+    function getDescricao: String;
+    procedure SetCodigo(const Value: Integer);
+    procedure SetDescricao(const Value: String);
+
+  public
+  constructor Create(aConexao:TFDConnection);
+  destructor Destroy; override;
+  function Incluir:Boolean;
+  function Alterar:Boolean;
+  function Excluir(id:Integer):Boolean;
+  function Selecionar(id:Integer):Boolean;
+  published
+    property Codigo:Integer   read getCodigo write SetCodigo;
+    property Descricao:String read getDescricao write SetDescricao;
+
+
+  end;
+
+
+implementation
+
+{ TCategoria }
+
+{$region 'Constructor e Destructor'}
+
+constructor TCategoria.Create(aConexao:TFDConnection);
+begin
+  ConexaoDB:=aConexao;
+end;
+
+destructor TCategoria.Destroy;
+begin
+
+  inherited;
+end;
+
+{$endregion}
+
+{$region 'CRUD'}
+function TCategoria.Excluir(id:Integer): Boolean;
+var Qry:TFDQuery;
+begin
+    if MessageDlg('Tem certeza que deseja excluir  o registro: '+#13+#13+
+    'Código: '+IntToStr(F_CODIGO)+#13+
+    'Descrição: '+F_DESCRICAO, mtConfirmation, [mbYes, mbNo],0) =mrNo then begin
+Result:=false;
+abort;
+end;
+try
+    Result:=True;
+    Qry:=TFDQuery.Create(nil);
+    Qry.Connection:=ConexaoDB;
+    Qry.SQl.Clear;
+    Qry.SQL.Add('DELETE FROM PA_ITEN_TESTE '+'WHERE CODIGO=:CODIGO');
+    Qry.ParamByName('CODIGO').AsInteger := ID;
+    Try
+    Qry.ExecSQL;
+    Except
+    Result:=False;
+    End;
+  finally
+    if Assigned(Qry) then
+    FreeAndNil(Qry);
+  end;
+end;
+
+function TCategoria.Alterar: Boolean;
+var Qry:TFDQuery;
+begin
+  try
+    Result:=True;
+    Qry:=TFDQuery.Create(nil);
+    Qry.Connection:=ConexaoDB;
+    Qry.SQl.Clear;
+    Qry.SQL.Add('UPDATE PA_ITEN_TESTE '+'SET DESCRICAO=:DESCRICAO '+'WHERE CODIGO=:CODIGO');
+    Qry.ParamByName('CODIGO').AsInteger := Self.Codigo;
+    Qry.ParamByName('DESCRICAO').AsString := Self.Descricao;
+    Try
+    Qry.ExecSQL;
+    Except
+    Result:=False;
+    End;
+  finally
+    if Assigned(Qry) then
+    FreeAndNil(Qry);
+  end;
+  if Result then
+  ShowMessage('Alterado!');
+end;
+
+function TCategoria.Incluir: Boolean;
+var Qry:TFDQuery;
+begin
+  try
+    Result:=True;
+    Qry:=TFDQuery.Create(nil);
+    Qry.Connection:=ConexaoDB;
+    Qry.SQl.Clear;
+    Qry.SQL.Add('INSERT INTO PA_ITEN_TESTE (DESCRICAO) VALUES (:DESCRICAO);');
+    Qry.ParamByName('DESCRICAO').AsString:=Self.F_Descricao;
+    Try
+    Qry.ExecSQL;
+    Except
+    Result:=False;
+    End;
+  finally
+    if Assigned(Qry) then
+    FreeAndNil(Qry);
+  end;
+end;
+
+function TCategoria.Selecionar(id: Integer): Boolean;
+var Qry:TFDQuery;
+begin
+  try
+    Result:=True;
+    Qry:=TFDQuery.Create(nil);
+    Qry.Connection:=ConexaoDB;
+    Qry.SQl.Clear;
+    Qry.SQL.Add('SELECT CODIGO, '+'DESCRICAO '+'FROM PA_ITEN_TESTE '+'WHERE CODIGO=:CODIGO');
+    Qry.ParamByName('CODIGO').AsInteger:=ID;
+    Try
+    Qry.Open;
+
+    Self.Codigo    := Qry.FieldByName('CODIGO').AsInteger;
+    Self.Descricao := Qry.FieldByName('DESCRICAO').AsString;
+    Except
+    Result:=False;
+    End;
+  finally
+    if Assigned(Qry) then
+    FreeAndNil(Qry);
+  end;
+end;
+{$endregion 'CRUD'}
+
+{$region 'Gets'}
+function TCategoria.getCodigo: Integer;
+begin
+  Result := Self.F_Codigo;
+end;
+
+function TCategoria.getDescricao: String;
+begin
+  Result := Self.F_Descricao;
+end;
+{$endregion 'Gets'}
+
+{$region 'Sets'}
+procedure TCategoria.SetCodigo(const Value: Integer);
+begin
+  Self.F_Codigo := Value;
+end;
+
+procedure TCategoria.SetDescricao(const Value: String);
+begin
+  Self.F_Descricao:= Value;
+end;
+{$endregion 'Sets'}
+
+end.

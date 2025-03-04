@@ -1,0 +1,308 @@
+  unit uTelaHeranca;
+
+  interface
+
+  uses
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,
+    Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, Vcl.ComCtrls, Vcl.ExtCtrls,
+    FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+    FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+    FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+    uDTMConexao,uEnum;
+
+  type
+    TfrmTelaHeranca = class(TForm)
+      pgcPrincipal: TPageControl;
+      pnlRodape: TPanel;
+      tabListagem: TTabSheet;
+      tabManutencao: TTabSheet;
+      btnIncluir: TBitBtn;
+      btnAlterar: TBitBtn;
+      btnCancelar: TBitBtn;
+      btnGravar: TBitBtn;
+      btnFechar: TBitBtn;
+      btnExcluir: TBitBtn;
+      grdListagem: TDBGrid;
+      pnlTopo: TPanel;
+      mskEdit: TMaskEdit;
+      btnPesquisar: TBitBtn;
+      lblIndice: TLabel;
+      dtListagem: TDataSource;
+      Label1: TLabel;
+      QryListagem: TFDQuery;
+      procedure btnFecharClick(Sender: TObject);
+      procedure FormCreate(Sender: TObject);
+      procedure btnIncluirClick(Sender: TObject);
+      procedure btnCancelarClick(Sender: TObject);
+      procedure btnGravarClick(Sender: TObject);
+      procedure btnExcluirClick(Sender: TObject);
+      procedure btnAlterarClick(Sender: TObject);
+      procedure FormShow(Sender: TObject);
+      procedure FormClose(Sender: TObject; var Action: TCloseAction);
+      procedure grdListagemTitleClick(Column: TColumn);
+      procedure mskEditChange(Sender: TObject);
+      procedure grdListagemDblClick(Sender: TObject);
+
+    private
+      { Private declarations }
+      procedure ControlarBotoes(btnIncluir, btnAlterar, btnCancelar, btnGravar, btnApagar:TBitBtn; pgcPrincipal: TPageControl; Flag:Boolean);
+      procedure ControlarIndiceTab(pgcPrincipal: TPageControl; Indice: Integer);
+      function  RetornarCampoTraduzido(Campo: String): String;
+      procedure ExibirLabelIndice(Campo: string; aLabel: TLabel);
+      function  ExisteCampoObrigatorio: Boolean;
+      procedure DesabilitarEditPK;
+      procedure LimparEdits;
+    public
+      { Public declarations }
+      IndiceAtual:string;
+      EstadoDoCadastro:TEstadoDoCadastro;
+      function Excluir:Boolean; virtual;
+      function Gravar(EstadoDoCadastro:TEstadoDoCadastro):Boolean; virtual;
+    end;
+
+  var
+    frmTelaHeranca: TfrmTelaHeranca;
+
+  implementation
+
+  {$R *.dfm}
+
+  {$region 'OBSERVAÇÕES'}
+  //TAG: 1 - CHAVE PRIMÁRIA - PK
+  //TAG: 2 - CAMPOS OBRIGATÓRIOS
+  {$endregion}
+
+  {$region 'FUNÇÕES E PROCEDURES-------------------------------------------------------------------------------------'}
+  //Procedimento de controle de tela:
+  procedure TfrmTelaHeranca.ControlarBotoes(btnIncluir, btnAlterar, btnCancelar, btnGravar, btnApagar:TBitBtn; pgcPrincipal: TPageControl; Flag:Boolean);
+  begin
+    btnIncluir.Enabled                :=Flag;
+    btnApagar.Enabled                 :=Flag;
+    btnAlterar.Enabled                :=Flag;
+    pgcPrincipal.Pages[0].TabVisible  :=Flag;
+    btnCancelar.Enabled               :=not(Flag);
+    btnGravar.Enabled                 :=not(Flag);
+  end;
+
+  procedure TfrmTelaHeranca.ControlarIndiceTab(pgcPrincipal: TPageControl; Indice: Integer);
+  begin
+    if (pgcPrincipal.Pages[Indice].TabVisible) then
+        pgcPrincipal.TabIndex:=Indice;
+  end;
+
+  function TfrmTelaHeranca.RetornarCampoTraduzido(Campo:String):String;
+  var I:Integer;
+  begin
+
+    for I := 0 to QryListagem.Fields.Count-1 do begin
+      if lowercase(QryListagem.Fields[i].FieldName)=lowercase(Campo) then begin
+        Result:=QryListagem.Fields[i].DisplayLabel;
+        Break;
+      end;
+
+    end;
+
+  end;
+
+  procedure TfrmTelaHeranca.ExibirLabelIndice(Campo:string; aLabel:TLabel);
+  begin
+    aLabel.Caption:=RetornarCampoTraduzido(Campo);
+  end;
+
+
+
+  function TfrmTelaHeranca.ExisteCampoObrigatorio:Boolean;
+
+  var I:Integer;
+
+  begin
+    Result:=False;
+    for I := 0 to ComponentCount-1 do begin
+      if (Components[i] is TLabeledEdit) then
+        begin
+          if (TLabeledEdit(Components[i]).Tag = 2) and (TLabeledEdit(Components[i]).Text=EmptyStr) then begin
+            MessageDlg(TLabeledEdit(Components[i]).EditLabel.Caption + ' é um campo obrigatório',mtInformation, [mbOK],0);
+            TLabeledEdit(Components[i]).SetFocus;
+            Result:=true;
+            Break
+          end;
+
+        end;
+
+    end;
+
+  end;
+
+  procedure TfrmTelaHeranca.DesabilitarEditPK;
+  var I:Integer;
+
+  begin
+      for I := 0 to ComponentCount -1 do begin
+        if (Components[i] is TLabeledEdit) then begin
+          if (TLabeledEdit(Components[i]).Tag = 1) then begin
+             TLabeledEdit(Components[i]).Enabled:=false;
+             Break;
+          end;
+        end;
+      end;
+    end;
+
+  procedure TfrmTelaHeranca.LimparEdits;
+  var I:Integer;
+
+  begin
+      for I := 0 to ComponentCount -1 do begin
+        if (Components[i] is TLabeledEdit) then
+           TLabeledEdit(Components[i]).Text:=EmptyStr
+        else if (Components[i] is TEdit) then
+           TEdit (Components[i]).Text:='';
+      end;
+    end;
+
+
+  {$endregion '------------------------------------------------------------------------------------------------------'}
+
+  {$region 'MÉTODOS VIRTUAIS-----------------------------------------------------------------------------------------'}
+  function TfrmTelaHeranca.Excluir: Boolean;
+  begin
+   ShowMessage('Excluido');
+   Result := True;
+  end;
+
+  function TfrmTelaHeranca.Gravar(EstadoDoCadastro:TEstadoDoCadastro):Boolean;
+  begin
+    if (EstadoDoCadastro=ecIncluir) then
+    showmessage ('Incluído')
+    else if (EstadoDoCadastro=ecAlterar) then
+    showmessage ('Alterado');
+    Result := True;
+
+  end;
+  {$endregion}
+
+  procedure SetEditControlsEnabled(frmTelaHeranca: TfrmTelaHeranca; Enabled: Boolean);
+  var
+    I: Integer;
+  begin
+    for I := 0 to frmTelaHeranca.ComponentCount - 1 do
+    begin
+      if frmTelaHeranca.Components[I] is TWinControl then
+      begin
+        if (frmTelaHeranca.Components[I] as TWinControl).Tag = 5 then
+          (frmTelaHeranca.Components[I] as TWinControl).Enabled := Enabled;
+      end;
+    end;
+  end;
+
+  procedure TfrmTelaHeranca.btnIncluirClick(Sender: TObject);
+  begin
+    ControlarBotoes(btnIncluir,btnAlterar,btnCancelar,btnGravar, btnExcluir, pgcPrincipal, false);
+    EstadoDoCadastro:=ecIncluir;
+    LimparEdits;
+  end;
+
+  procedure TfrmTelaHeranca.btnAlterarClick(Sender: TObject);
+  begin
+    ControlarBotoes(btnIncluir,btnAlterar,btnCancelar,btnGravar, btnExcluir, pgcPrincipal, false);
+    EstadoDoCadastro:=ecAlterar;
+  end;
+
+  procedure TfrmTelaHeranca.btnExcluirClick(Sender: TObject);
+  begin
+     Try
+        if (Excluir) then begin
+
+        ControlarBotoes(btnIncluir,btnAlterar,btnCancelar,btnGravar, btnExcluir, pgcPrincipal, true);
+        ControlarIndiceTab(pgcPrincipal, 0);
+        LimparEdits;
+        QryListagem.Refresh;
+        end
+        else begin
+         MessageDlg('Erro na exclusão', mtError, [mbok] ,0);
+        end;
+     Finally
+     EstadoDoCadastro:=ecNenhum;
+     End;
+  End;
+
+  procedure TfrmTelaHeranca.btnCancelarClick(Sender: TObject);
+  begin
+    ControlarBotoes(btnIncluir,btnAlterar,btnCancelar,btnGravar, btnExcluir, pgcPrincipal, true);
+    ControlarIndiceTab(pgcPrincipal, 0);
+    EstadoDoCadastro:=ecNenhum;
+    LimparEdits;
+  end;
+
+  procedure TfrmTelaHeranca.btnFecharClick(Sender: TObject);
+  begin
+    Close;
+  end;
+
+  procedure TfrmTelaHeranca.btnGravarClick(Sender: TObject);
+  begin
+    if (ExisteCampoObrigatorio)=true then
+    abort;
+
+    Try
+      if Gravar(EstadoDoCadastro) then begin
+         ControlarBotoes(btnIncluir,btnAlterar,btnCancelar,btnGravar, btnExcluir, pgcPrincipal, true);
+         ControlarIndiceTab(pgcPrincipal, 0);
+         EstadoDoCadastro:=ecNenhum;
+         LimparEdits;
+         QryListagem.Refresh;
+         end
+
+      else begin
+        MessageDlg('Erro na gravação', mtError, [mbok] ,0);
+      end;
+    Finally
+    end;
+  end;
+
+  procedure TfrmTelaHeranca.FormClose(Sender: TObject; var Action: TCloseAction);
+  begin
+    QryListagem.Close;
+  end;
+
+  procedure TfrmTelaHeranca.FormCreate(Sender: TObject);
+  begin
+    QryListagem.Connection:=dtmPrincipal.ConexaoDB;
+    grdListagem.Options:=[dgAlwaysShowEditor,dgTitles,dgIndicator,dgColumnResize,
+                          dgColLines,dgRowLines,dgTabs,dgRowSelect,
+                          dgCancelOnExit,dgTitleClick,dgTitleHotTrack]
+  end;
+
+  procedure TfrmTelaHeranca.FormShow(Sender: TObject);
+  begin
+   if (QryListagem.SQL.Text<>EmptyStr) then
+   begin
+     QryListagem.IndexFieldNames:=IndiceAtual;
+     ExibirLabelIndice(IndiceAtual, lblIndice);
+     QryListagem.Open;
+   end;
+   ControlarIndiceTab(pgcPrincipal, 0);
+   DesabilitarEditPK;
+   ControlarBotoes(btnIncluir,btnAlterar,btnCancelar,btnGravar, btnExcluir, pgcPrincipal, true);
+
+  end;
+
+  procedure TfrmTelaHeranca.grdListagemDblClick(Sender: TObject);
+  begin
+    SetEditControlsEnabled(Self, True);
+    btnAlterar.Click;
+  end;
+
+  procedure TfrmTelaHeranca.grdListagemTitleClick(Column: TColumn);
+  begin
+    IndiceAtual := Column.FieldName;
+    QryListagem.IndexFieldNames:=IndiceAtual;
+    ExibirLabelIndice(IndiceAtual, lblIndice);
+  end;
+
+  procedure TfrmTelaHeranca.mskEditChange(Sender: TObject);
+  begin
+    QryListagem.Locate(IndiceAtual, TMaskEdit(Sender).Text, [loPartialKey]);
+  end;
+
+  end.

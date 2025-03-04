@@ -1,0 +1,24 @@
+program Sistema;
+
+uses
+  Vcl.Forms,
+  uPrincipal in 'uPrincipal.pas' {FrmPrincipal},
+  uDTMConexao in 'uDTMConexao.pas' {dtmPrincipal: TDataModule},
+  uTelaHeranca in 'Heranca\uTelaHeranca.pas' {frmTelaHeranca},
+  uCadCategorias in 'Cadastro\uCadCategorias.pas' {frmCadCategorias},
+  Enter in 'Enter.pas',
+  uEnum in 'Heranca\uEnum.pas',
+  cCadCategoria in 'Classes\cCadCategoria.pas',
+  uCadProduto in 'CadProduto\uCadProduto.pas' {frmCadProduto},
+  uPesquisa in 'Pesquisa\uPesquisa.pas' {frmPesquisa};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+  Application.CreateForm(TfrmCadProduto, frmCadProduto);
+  Application.CreateForm(TfrmPesquisa, frmPesquisa);
+  Application.Run;
+end.

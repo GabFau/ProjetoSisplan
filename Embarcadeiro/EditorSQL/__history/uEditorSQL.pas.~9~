@@ -1,0 +1,137 @@
+unit uEditorSQL;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Grids, Vcl.DBGrids,
+  FireDAC.Comp.Client, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Stan.Param, FireDAC.Comp.DataSet, uDTMConexao,
+  Vcl.Buttons, FireDAC.Phys.Intf, FireDAC.Stan.Async, Vcl.ExtCtrls, Vcl.ComCtrls;
+
+type
+  TfrmEditorSQL = class(TForm)
+    mmSQL: TMemo;
+    dbGridSQL: TDBGrid;
+    dtSQL: TDataSource;
+    QrySQL: TFDQuery;
+    Panel1: TPanel;
+    btnF9: TBitBtn;
+    StatusBar: TStatusBar;
+    btnExecutar: TBitBtn;
+    procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
+    procedure btnF9Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    procedure ExecuteSQL(const SQLText: string);
+    procedure UpdateStatus(const Msg: string; const IsSuccess: Boolean);
+  public
+  end;
+
+var
+  frmEditorSQL: TfrmEditorSQL;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmEditorSQL.btnF9Click(Sender: TObject);
+begin
+  // Executa a consulta SQL (SELECT)
+  ExecuteSQL(mmSQL.Lines.Text);
+end;
+
+procedure TfrmEditorSQL.ExecuteSQL(const SQLText: string);
+begin
+  try
+    dbGridSQL.DataSource := nil;
+    QrySQL.SQL.Text := SQLText;
+
+    // Verifica se é uma consulta de seleção (SELECT)
+    if QrySQL.SQL.Text.Trim.StartsWith('SELECT', True) then
+    begin
+      QrySQL.Open;
+
+      if QrySQL.IsEmpty then
+      begin
+        UpdateStatus('Consulta executada, mas sem resultados.', False);
+        dbGridSQL.DataSource := nil;
+      end
+      else
+      begin
+        dbGridSQL.DataSource := dtSQL;
+        UpdateStatus('Consulta executada com sucesso.', True);
+      end;
+    end
+    else
+    begin
+      // Executa comandos de modificação (INSERT, UPDATE, DELETE, etc.)
+      QrySQL.ExecSQL;
+      UpdateStatus('Comando executado com sucesso.', True);
+      dbGridSQL.DataSource := nil;
+    end;
+
+  except
+    on E: Exception do
+    begin
+      ShowMessage('Erro ao executar SQL: ' + E.Message);
+      UpdateStatus('Erro na execução do SQL: ' + E.Message, False);
+    end;
+  end;
+end;
+
+procedure TfrmEditorSQL.FormCreate(Sender: TObject);
+begin
+  Caption := 'Editor SQL';  // Define um título específico para o formulário
+  mmSQL.Lines.Clear;  // Limpa o conteúdo do TMemo
+  dtSQL.DataSet := QrySQL;
+  QrySQL.Connection := dtmPrincipal.ConexaoDB;
+
+  if StatusBar.Panels.Count = 0 then
+    StatusBar.Panels.Add;
+end;
+
+procedure TfrmEditorSQL.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  // Verifica se a tecla F9 foi pressionada
+  if Key = VK_F9 then
+  begin
+    btnF9.Click;  // Aciona o evento do botão F9
+    Key := 0;  // Impede o comportamento padrão da tecla
+  end;
+
+  // Verifica se a tecla F6 foi pressionada
+  if Key = VK_F6 then
+  begin
+    btnExecutar.Click;  // Aciona o evento do botão Executar
+    Key := 0;  // Impede o comportamento padrão da tecla
+  end;
+end;
+
+procedure TfrmEditorSQL.StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
+begin
+  if Panel.Text = 'Erro' then
+    StatusBar.Canvas.Brush.Color := clRed
+  else
+    StatusBar.Canvas.Brush.Color := clGreen;
+
+  StatusBar.Canvas.FillRect(Rect);
+  StatusBar.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Panel.Text);
+end;
+
+procedure TfrmEditorSQL.UpdateStatus(const Msg: string; const IsSuccess: Boolean);
+begin
+  StatusBar.Panels[0].Text := Msg;
+
+  if IsSuccess then
+    StatusBar.Panels[0].Text := 'Sucesso'
+  else
+    StatusBar.Panels[0].Text := 'Erro';
+
+  StatusBar.Repaint;
+end;
+
+end.
+

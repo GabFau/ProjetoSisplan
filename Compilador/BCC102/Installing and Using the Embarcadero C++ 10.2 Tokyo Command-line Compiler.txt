@@ -1,0 +1,448 @@
+Installing and Using the Embarcadero C++ 10.2 ‘Tokyo’ Compiler and
+Command-line Tools
+==================
+
+How do I install the Embarcadero 10.2 Tokyo Compiler and command-
+line tools? This document takes a look at what's contained in the free
+download and shows how you can start building programs.
+
+Contents:
+# Introduction and basic information
+# Detailed information about the compiler, including a list of all included
+  tools 
+# Resources
+# Putting it all together - using the compiler 
+# Detailed installation instructions (check this if you’re having trouble) 
+# Final words
+# Acknowledgements
+
+Introduction
+============
+
+The Embarcadero 10.2 Tokyo C++ compiler is a free, Clang-based compiler for
+32-bit Windows. The download includes a number of other tools, as well as the
+Dinkumware STL and headers and import libraries required to build both
+command-line and GUI Windows applications.
+
+You are welcome and encouraged to use the tools, including for learning C++ or
+ensuring C++ code you maintain is compatible with this compiler.
+
+This C++ compiler and RTL is a small part of C++Builder, and we encourage you
+to download and test out the full product.  C++Builder is a cross-platform
+C++ IDE for rapid development with powerful UI, database, and other tools. It
+supports Windows, iOS, Android, and macOS.  This compiler is for Win32 only,
+and so does not include Win64 or other platforms, or support for any of our
+key libraries - the VCL (native Windows controls); FMX (cross-platform UI
+toolkit, GPU-powered, vectorised); FireDAC (performant, elegant database tech),
+or of course the IDE itself.
+
+If you need to write a UI that works on all those platforms, tweaking (like
+subclassing) for each platform rather than redoing it with four times the
+effort, C++Builder is your IDE. If you need database code that works on all
+platforms with a clean and elegant design, C++Builder is your IDE. If you just
+happen to like C++ and want to try something new, have a look.  Our customers
+report creating applications five times faster than with other tools,
+libraries, and IDEs, and that's based on actual customer feedback.
+
+https://www.embarcadero.com/products/cbuilder
+
+
+Basic Information
+-----------------
+
+To install the Embarcadero C++ 10.2 Tokyo Free Command-line Tools, simply
+right-click on the downloaded zip file, click ‘Extract All…’ in the popup
+menu, and choose all of the default options. You need to add the ‘bin’ folder
+to your system path, and then the compiler can be used immediately. If you are
+not sure how to do that, instructions are included at the end of this
+document.
+
+Use of the C++ 10.2 Tokyo compiler assumes the user is comfortable working
+within a console interface.
+
+Provided compilers
+------------------
+
+This download includes two compilers: bcc32c and bcc32x.  These are Clang-
+enhanced compilers supporting Embarcadero language extensions, such as 
+__property and __closure.
+
+The two compilers are identical, except for their command-line handling.
+bcc32c supports the classic bcc32 compiler command line. Use this if you are
+familiar with the old, classic compiler.  bcc32x supports the Clang command
+line. Use this if you are familiar with Clang or want to use a more common
+command line interface.
+
+Basic usage
+-----------
+
+Typically, the user will run an application such as Notepad or Sublime Text to
+actually write their program (an editor is not supplied with the compiler).
+When the user wishes to compile source code, they save the file out as
+"filename.cpp" and then use the command-line tools from the command prompt to
+compile and create an executable.  Like so:
+	bcc32c filename.cpp
+or
+	bcc32x filename.cpp
+
+The first argument is name of the compiler tool, and the second argument
+contains the C++ source file.  This application will attempt to compile the
+source code and will notify the user of any errors in the code.  If no errors
+are found it will create an executable. To display information regarding the
+various switches, type
+	bcc32c -h
+or
+    bcc32x --help
+
+There are a wide variety of switches. To get further information on any
+switch, add that switch after the “-h”. For example, to get more information
+on “-a” (set data alignment boundary), type
+	bcc32c -h -a
+
+Testing the compiler
+--------------------
+Open a console window:
+	Start | Run...  (or click the search box in Windows 10)
+	Type "cmd" into the field [Enter]
+
+Create a directory or navigate to where you want to store your source, for
+example:
+	Type "cd"
+	Type "mkdir MySource"
+	cd Mysource
+(Now in “c:\users\You\MySource” or similar depending on your version of
+Windows.)
+  
+Create a new source file, for example:
+	Type 'notepad hello.cpp' to edit in Windows Notepad. It will ask if you
+	want to create a new file; click Yes.	
+	Paste or type the following code in the editor:
+		#include <iostream>
+		int main(void)
+		{
+			std::cout << "Hello world!" << std::endl;
+			return 0;
+		}
+	Save the changes (File menu, Save, in Notepad).
+
+Compile the program to create an executable:
+	In the console window, type
+		bcc32c hello.cpp
+	or
+	    bcc32x hello.cpp
+
+Finally, you can run the application you created. In the console window, type
+	hello
+(The output will appear below your last command line.)
+
+Detailed information about the compiler and command-line tools
+--------------------------------------------------------------
+
+First, let's look at the directory structure. The root by default is called
+BCC102. Under this directory you will find:
+	Bin
+	Include
+	Lib 
+	Bin
+
+Bin is short for binaries. Under this directory you will find all of the
+command-line tools (as well as RTL dynamic libraries). There are a wide
+variety of tools, many more than just the compiler and linker.
+
+All tools are command-line; that is, they must be run from a command prompt.
+
+Complete list of tools in \bin
+------------------------------
+
+bcc32c
+This is the compiler itself. Use the -h option to see all options. See
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Win32_Clang-enhanced_Compilers
+	Configuration file
+	The compiler also uses a configuration file, bcc32c.cfg. The files contain
+	options that would otherwise be passed on the command line. The download
+	contains a configuration file with default values that should work on your
+	system.
+
+bcc32x
+This is the compiler itself. It is the same as bcc32c, except that it used the
+Clang command line optons. Use the --help option to see all options. See
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Win32_Clang-enhanced_Compilers
+	Configuration file
+	The compiler also uses a configuration file, bcc32x.cfg. The files contain
+	options that would otherwise be passed on the command line. The download
+	contains a configuration file with default values that should work on your
+	system.
+
+cpp32c
+This is a C++ preprocessor. It allows you to see
+the initial operations performed on C or C++ files before they are compiled,
+ie expansion of #includes and processing of #defines. See
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/CPP32.EXE,_the_C_Compiler_P
+reprocessor
+
+grep
+A tool for searching text files (such as source code) for matching strings.
+See
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/GREP.EXE,_the_text_search_u
+tility
+
+ilink32
+The linker, which combines compiler-output object files into an
+executable file. It is normally invoked by the compiler. See http://docwiki.em
+barcadero.com/RADStudio/Tokyo/en/ILINK32.EXE,_the_32-bit_Incremental_Linker
+
+implib
+This takes either a DLL or a module definition file as input, and creates an
+import library (.lib). For more information, see
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/IMPLIB.EXE,_the_Import_Libr
+ary_Tool_for_Win32
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Linking_DLLs_(C++)
+
+make
+A tool used to run commands based on file dependencies, usually used to help
+compile a project of many source files. See
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/MAKE.EXE 
+
+tdump
+Displays a large amount of information about the structure of a .exe, .lib or
+.obj file, including debug information, exports, and more. See
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/TDUMP.EXE,_the_File_Dumping_Utility
+
+tlib
+Manages libraries (.lib files) created from several object files (.obj.) You
+can create a library from several .obj files, add or remove .obj files,
+replace .obj files, etc. See
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/TLIB.E
+XE,_the_Library_Manager
+
+touch
+Sets the last-modified date and time of one or more files to the current time
+or a specified time. See
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/TOUCH.EXE
+
+For general information about all command-line utilities, see
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Command-
+Line_Utilities_Index
+
+Include
+-------
+This directory contains all of the header files for the RTL, the STL
+(Dinkumware) and the Windows SDK.
+
+lib\win32c
+There are two subfolders, debug and release. These contain all of the static
+and import library files and startup code modules for debug or release builds.
+
+Resources
+=========
+
+Embarcadero has extensive help online in the ‘docwiki’ for the tools,
+libraries, C++ itself, and the larger product this compiler is a small part
+of, C++Builder. You can find it at
+http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Main_Page
+
+There is also a Google Plus community at
+https://plus.google.com/communities/118315259185736124693
+
+Embarcadero has regular blogs and articles on the Community site:
+http://community.embarcadero.com/blogs and http://community.embarcadero.com/ 
+
+A very wide range of blogs on the general RAD Studio family (including
+C++Builder’s sister product, Delphi) can be found at https://www.beginend.net/
+
+We also recommend http://www.cplusplus.com/ and http://cppreference.com/ as
+excellent resources for learning C++.
+
+This compiler is for Windows 32-bit only. If you would like to compile, debug
+etc for Windows 64-bit, iOS, Android, or macOS in addition to Win32 (and
+possibly even more platforms by the time you read this), you can find the full
+compiler and IDE suite as part of C++Builder:
+https://www.embarcadero.com/products/cbuilder
+
+We specialise in cross-platform C++, where you can compile, debug and deploy
+for many platforms using one IDE and one compiler framework. This includes UI
+design - there is no need to create separate UIs in platform-specific
+software; create it once (with per-platform tweaks using the multi-device
+designer, including platform-native controls) and save yourself a lot of time.
+We also have world-class database and enterprise services frameworks, and all
+this can be used with the same source on all platforms. This greatly
+accelerates your app development, and we’re very proud of it. We encourage you
+to check it out at https://www.embarcadero.com/products/cbuilder
+
+Okay, advertising over now. (But seriously, go have a look.)
+
+Putting it all together
+=======================
+
+So, now that you are armed with all this information you are probably
+wondering "How do I turn my source code into a program?" We will start with
+the simplest case of a single source file, console program. Here is the source
+code of a file called simple.cpp that I wrote in the text editor, Notepad:
+
+	#include <stdio.h> 
+	int main(void)
+	{
+		printf("Output from running program");
+		return 0;
+	}
+
+To build this into a program we only need to call the compiler and tell it the
+filename of the C++ file to compile:
+	bcc32c simple.cpp
+or
+    bcc32x simple.cpp
+
+The resulting program is called simple.exe and can be run by typing “simple”
+at the command-line. You can change the output name by using the “-o” switch
+and specifying a different filename.
+
+Now, let's look at the case of a console program with two source modules.
+simple.cpp will contain our entry point main and will call a function defined
+in the other module, funcs.cpp. The first example was very simple, barely
+worth calling C++, so this example includes a couple of C++11 features.
+
+simple.cpp:
+	#include "funcs.h" 
+	int main(void) 
+	{
+		const std::string str = GetMessage(); 
+		std::cout << str << std::endl;
+
+		const int a = 4;
+		PrintResult([=]() { return a + str.length(); }); 
+	}
+
+funcs.h:
+	#include <string> 
+	#include <iostream>
+
+	template <typename F> 
+	void PrintResult(F f) { std::cout << f() << std::endl; }
+	std::string GetMessage();
+
+and funcs.cpp:
+	#include "funcs.h"
+
+	std::string GetMessage()
+	{
+		return "Hello world.";
+	}
+
+To build this, simply add funcs.cpp to the previous compiler command-line as
+such:
+	bcc32c simple.cpp funcs.cpp
+or
+    bcc32x simple.cpp funcs.cpp
+
+The output simple.exe file will be generated and you can run it from the
+command line, where it will print a message.
+
+So what happens if you have a bunch of different include and library
+directories, or hundreds of source files? As you can imagine the command-line
+for this would be huge. You have two choices: wrap up all of these commands
+into a batch file, or write a makefile to use with the ‘make’ utility, which
+is included in the bin folder.
+
+CMake support
+=============
+
+C++Builder supports using CMake with the compilers for Windows, iOS and Android.
+That includes bcc32x.  Install C++Builder for full support.
+
+For the default CMake download from Kitware, out of the box you can use CMake
+specifying the Borland makefile generator with bcc32c. We have support for
+CMake and bcc32x when you install C++Builder itself.  Here is an example batch
+script (.bat file):
+	REM Make sure cmake.exe, bcc32c.exe and borland make.exe are in the Path
+	@echo off
+	mkdir build
+	cd build 
+	cmake -G"Borland Makefiles" -DCMAKE_CXX_COMPILER="bcc32c.exe"
+		-DCMAKE_C_COMPILER="bcc32c.exe" -DCMAKE_VERBOSE_MAKEFILE=1 ..
+	make
+	cd ..
+	echo CMakeBCC: Results available in 'build' folder
+
+When copy/pasting, make sure the “cmake -G…” line (with several -DCMAKE_ flags)
+is all on one line.
+
+Detailed Installation
+=====================
+
+If you’re having trouble installing, follow the instructions in this section.
+
+Extracting the zip file
+-----------------------
+
+Unzip the downloaded file to any location. For example, it could be unzipped
+to c:\BCC102\. Do this by right-clicking on the file in Explorer, selecting
+“Extract To…” on the popup menu, and clicking Ok until it’s complete.
+Configuring the system path The location of the compiler must be in your
+system path.
+
+Find the location where you unzipped the downloaded file. This should be a
+folder with three subfolders (\bin, \include and \lib.) For example, if you
+extracted to the c:\ drive you may have a folder ‘c:\BCC102\bin’. You can
+extract the downloaded file to any location, and you can copy/paste the
+location from Explorer by clicking in the path edit box and selecting the
+text, then pressing Ctrl+C or right-clicking and choosing Copy.
+
+Add a path reference to the Environment variables
+-------------------------------------------------
+
+Open the system properties:
+	In Windows 7: Using the mouse, right-click on the "My Computer" icon (on
+your desktop), and choose "Properties". In Windows 10: Open an Explorer
+window. Using the mouse, right-click on “This PC” and choose “Properties”.
+	Then, click on “Advanced system settings” in the left-side pane.
+	Click on the "Advanced" tab.
+	Click on the "Environment Variables..." button.
+	Highlight the "Path" System variable (bottom). Click on the "Edit..."
+	button.
+	Add the path to the \bin folder:
+		In Windows 7: Append the line with ";c:\BCC102\BIN;" (or your
+		installation folder)
+		In Windows 10: Click the “New” button, and enter “c:\BCC102\bin” in
+		the text box that appears below the other items in the list. Press
+		Enter.
+	Click OK (in the "Edit System Variables" (Windows 7) or “Edit environment
+	variables” (Windows 10) dialog)
+	Click OK (in the "Environment Variables" window) and click OK (in the
+	"System Properties" window)
+
+Testing the compiler is in the system path
+------------------------------------------
+
+Open a console window:
+	Start | Run... (or click the search box in Windows 10)
+	Type "cmd" into the field [Enter] (or 'command', if 'cmd' is not found)
+
+Now, in the console window, type the following:
+	bcc32c 
+You should see text in the console,
+	Embarcadero C++ 7.30 for Win32 Copyright (c) 2012-2016 Embarcadero
+	Technologies, Inc.
+	
+Now, in the console window, type the following:
+	bcc32x
+You should see text in the console,
+	Embarcadero C++ 7.30 for Win32 Copyright (c) 2012-2017 Embarcadero
+	Technologies, Inc.
+
+If you do not, double-check that the system path settings point to the “bin”
+folder where you extracted the download zip file.
+
+Final words
+===========
+
+We hope you find these tools useful. Go forth and code!
+
+Check out the full C++Builder IDE (far more than a Win32 compiler) at
+https://www.embarcadero.com/products/cbuilder
+
+Acknowledgements
+================
+
+This was based on a previous community article on the older Embarcadero
+Developer Network (EDN) web site written by John Thomas, further modified by
+Marco Cantù, further modified by David Millington.
