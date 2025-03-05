@@ -18,8 +18,6 @@ object frmPesquisa2: TfrmPesquisa2
     Height = 54
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 337
-    ExplicitWidth = 611
     object btnConfirmar: TBitBtn
       Left = 14
       Top = 14
@@ -68,7 +66,6 @@ object frmPesquisa2: TfrmPesquisa2
     Height = 57
     Align = alTop
     TabOrder = 2
-    ExplicitWidth = 611
     object lblIndice: TLabel
       Left = 90
       Top = 21

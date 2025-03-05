@@ -19,7 +19,7 @@ object dtmPrincipal: TdtmPrincipal
     Top = 32
   end
   object dtmFBLink: TFDPhysFBDriverLink
-    VendorLib = 'C:\Program Files (x86)\Firebird\Firebird_3_0\fbclient.dll'
+    VendorLib = 'C:\Program Files\Firebird\Firebird_3_0\fbclient.dll'
     Left = 120
     Top = 32
   end

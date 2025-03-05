@@ -4,7 +4,6 @@ inherited frmCadCategorias: TfrmCadCategorias
   TextHeight = 15
   inherited pgcPrincipal: TPageControl
     ActivePage = tabListagem
-    ExplicitTop = 8
     inherited tabListagem: TTabSheet
       inherited pnlTopo: TPanel
         StyleElements = [seFont, seClient, seBorder]

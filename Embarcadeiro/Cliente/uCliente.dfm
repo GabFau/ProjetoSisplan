@@ -6,7 +6,6 @@ inherited frmCadCliente: TfrmCadCliente
   TextHeight = 15
   inherited pgcPrincipal: TPageControl
     ActivePage = tabManutencao
-    ExplicitTop = 0
     inherited tabListagem: TTabSheet
       inherited grdListagem: TDBGrid
         Top = 73
@@ -283,6 +282,7 @@ inherited frmCadCliente: TfrmCadCliente
           EditLabel.Width = 47
           EditLabel.Height = 15
           EditLabel.Caption = 'N'#250'mero:'
+          NumbersOnly = True
           TabOrder = 5
           Text = ''
         end
@@ -503,7 +503,6 @@ inherited frmCadCliente: TfrmCadCliente
     StyleElements = [seFont, seClient, seBorder]
   end
   inherited QryListagem: TFDQuery
-    Active = True
     SQL.Strings = (
       
         'SELECT CODCLI AS CODIGO, NOME, CPF_CNPJ, IE, CLASSIFICACAO, CEP,' +

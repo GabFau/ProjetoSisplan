@@ -1,0 +1,54 @@
+inherited frmCadCategorias: TfrmCadCategorias
+  Caption = 'Cadastro de Categorias'
+  StyleElements = [seFont, seClient, seBorder]
+  TextHeight = 15
+  inherited pgcPrincipal: TPageControl
+    ActivePage = tabListagem
+    ExplicitTop = 8
+    inherited tabListagem: TTabSheet
+      inherited pnlTopo: TPanel
+        StyleElements = [seFont, seClient, seBorder]
+        inherited lblIndice: TLabel
+          StyleElements = [seFont, seClient, seBorder]
+        end
+        inherited Label1: TLabel
+          StyleElements = [seFont, seClient, seBorder]
+        end
+        inherited mskEdit: TMaskEdit
+          StyleElements = [seFont, seClient, seBorder]
+        end
+      end
+    end
+    inherited tabManutencao: TTabSheet
+      object edtCodigo: TLabeledEdit
+        Tag = 1
+        Left = 20
+        Top = 32
+        Width = 153
+        Height = 23
+        EditLabel.Width = 39
+        EditLabel.Height = 15
+        EditLabel.Caption = 'C'#243'digo'
+        EditLabel.Color = clBtnFace
+        EditLabel.ParentColor = False
+        TabOrder = 0
+        Text = ''
+      end
+      object edtDescricao: TLabeledEdit
+        Tag = 2
+        Left = 179
+        Top = 32
+        Width = 382
+        Height = 23
+        EditLabel.Width = 51
+        EditLabel.Height = 15
+        EditLabel.Caption = 'Descri'#231#227'o'
+        TabOrder = 1
+        Text = ''
+      end
+    end
+  end
+  inherited pnlRodape: TPanel
+    StyleElements = [seFont, seClient, seBorder]
+  end
+end
