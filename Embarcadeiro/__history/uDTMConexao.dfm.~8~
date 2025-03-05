@@ -3,7 +3,7 @@ object dtmPrincipal: TdtmPrincipal
   Width = 640
   object ConexaoDB: TFDConnection
     Params.Strings = (
-      'Database=C:\ProjetoSisplan-main\BASE\BASE.FDB'
+      'Database=C:\ProjetoSisplan\BASE\BASE.FDB'
       'User_Name=SYSDBA'
       'Password=masterkey'
       'Port=3050'
