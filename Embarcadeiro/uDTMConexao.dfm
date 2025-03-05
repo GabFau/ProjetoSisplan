@@ -6,7 +6,6 @@ object dtmPrincipal: TdtmPrincipal
       'Database=C:\ProjetoSisplan\BASE\BASE.FDB'
       'User_Name=SYSDBA'
       'Password=masterkey'
-      'Server=127.0.0.1'
       'Port=3050'
       'DriverID=FB')
     UpdateOptions.AssignedValues = [uvAutoCommitUpdates]
