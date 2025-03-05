@@ -3,9 +3,7 @@ object dtmPrincipal: TdtmPrincipal
   Width = 640
   object ConexaoDB: TFDConnection
     Params.Strings = (
-      
-        'Database=C:\Users\gf353\OneDrive\Documentos\Projeto_Prog\Projeto' +
-        '1\BASE\BASE.FDB'
+      'Database=C:\ProjetoSisplan\BASE\BASE.FDB'
       'User_Name=SYSDBA'
       'Password=masterkey'
       'Server=127.0.0.1'
@@ -13,7 +11,6 @@ object dtmPrincipal: TdtmPrincipal
       'DriverID=FB')
     UpdateOptions.AssignedValues = [uvAutoCommitUpdates]
     UpdateOptions.AutoCommitUpdates = True
-    Connected = True
     LoginPrompt = False
     Left = 48
     Top = 32
