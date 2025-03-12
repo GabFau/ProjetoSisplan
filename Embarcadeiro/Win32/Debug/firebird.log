@@ -1,0 +1,10 @@
+
+FAUSTINO	Tue Mar 11 19:40:45 2025
+	INET/inet_error: read errno = 10053, server host = 127.0.0.1, address = 127.0.0.1/3050
+
+
+FAUSTINO	Tue Mar 11 19:40:45 2025
+	REMOTE INTERFACE/gds__detach: Unsuccesful detach from database.
+	Uncommitted work may have been lost.
+	Error reading data from the connection.
+

@@ -105,6 +105,7 @@ object frmPesquisa: TfrmPesquisa
     Top = 8
   end
   object QryPesquisa: TFDQuery
+    Active = True
     Connection = dtmPrincipal.ConexaoDB
     SQL.Strings = (
       'SELECT * FROM COR_001')

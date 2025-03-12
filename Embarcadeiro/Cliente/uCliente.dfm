@@ -5,7 +5,6 @@ inherited frmCadCliente: TfrmCadCliente
   StyleElements = [seFont, seClient, seBorder]
   TextHeight = 15
   inherited pgcPrincipal: TPageControl
-    ActivePage = tabManutencao
     inherited tabListagem: TTabSheet
       inherited grdListagem: TDBGrid
         Top = 73
@@ -503,6 +502,7 @@ inherited frmCadCliente: TfrmCadCliente
     StyleElements = [seFont, seClient, seBorder]
   end
   inherited QryListagem: TFDQuery
+    Active = True
     SQL.Strings = (
       
         'SELECT CODCLI AS CODIGO, NOME, CPF_CNPJ, IE, CLASSIFICACAO, CEP,' +

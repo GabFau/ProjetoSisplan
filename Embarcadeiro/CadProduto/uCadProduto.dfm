@@ -17,6 +17,7 @@ inherited frmCadProduto: TfrmCadProduto
     Height = 250
   end
   inherited pgcPrincipal: TPageControl
+    ActivePage = tabListagem
     inherited tabListagem: TTabSheet
       inherited grdListagem: TDBGrid
         Top = 73

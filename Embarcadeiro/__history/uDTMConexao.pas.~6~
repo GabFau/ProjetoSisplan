@@ -1,0 +1,48 @@
+unit uDTMConexao;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Vcl.Forms,  // adicione Vcl.Forms aqui
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error,
+  FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.FB,
+  FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait, FireDAC.Comp.UI,
+  FireDAC.Phys.IBBase, Data.DB, FireDAC.Comp.Client;
+
+type
+  TdtmPrincipal = class(TDataModule)
+    ConexaoDB: TFDConnection;
+    dtmFBLink: TFDPhysFBDriverLink;
+    procedure DataModuleCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dtmPrincipal: TdtmPrincipal;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+procedure TdtmPrincipal.DataModuleCreate(Sender: TObject);
+var
+  AppPath: string;
+begin
+  AppPath := ExtractFilePath(Application.ExeName);
+{$IFDEF WIN64}
+  dtmFBLink.VendorLib := AppPath + 'fbclient64' + PathDelim + 'fbclient.dll';
+{$ELSE}
+  dtmFBLink.VendorLib := AppPath + 'fbclient32' + PathDelim + 'fbclient.dll';
+{$ENDIF}
+end;
+
+
+
+
+end.
